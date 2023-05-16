@@ -27,10 +27,16 @@ router.route('/seats').post((req, res) => {
       .status(400)
       .json({ message: 'client, seat, email and day are required' });
   } else {
-    const newSeat = { id: uuidv4(), day, seat, client, email };
-    res.set('Content-Type', 'application/json');
-    seats.push(newSeat);
-    res.json({ message: 'OK' });
+    ////////////////////////////////////////////////////////////
+    const isSeatTaken = seats.some((t) => t.day === day && t.seat === seat);
+    if (isSeatTaken) {
+      res.status(400).json({ message: 'The slot is already taken...' });
+    } else {
+      const newSeat = { id: uuidv4(), day, seat, client, email };
+      res.set('Content-Type', 'application/json');
+      seats.push(newSeat);
+      res.json({ message: 'OK' });
+    }
   }
 });
 
