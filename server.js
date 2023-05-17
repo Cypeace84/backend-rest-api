@@ -15,19 +15,19 @@ app.use('/api', testimonialRoutes); // add testimonial routes to server
 app.use('/api', concertsRoutes);
 app.use('/api', seatsRoutes);
 
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Not found...' });
-});
+// app.use((req, res, next) => {
+//   res.status(404).json({ message: 'Not found...' });
+// });
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '/client/build')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/build/index.html'));
 });
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '/client/build')));
 
 // app.listen(8080, () => {
 //   console.log('Server is running on port: 8080');
 // });
-app.listen(process.env.PORT || 8080, () => {
-  console.log('Server is running on port: 8080');
+app.listen(process.env.PORT || 8001, () => {
+  console.log('Server is running on port: 8001');
 });
