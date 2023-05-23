@@ -4,27 +4,63 @@ import { Button, Progress, Alert } from 'reactstrap';
 import {
   getSeats,
   loadSeatsRequest,
+  loadSeats,
   getRequests,
 } from '../../../redux/seatsRedux';
 import './SeatChooser.scss';
+import io from 'socket.io-client';
 
 const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
   const dispatch = useDispatch();
   const seats = useSelector(getSeats);
+  console.log('seats:', seats);
   const requests = useSelector(getRequests);
 
+  const socket = io('http://localhost:8001');
+
+  socket.on('connection', () => {
+    console.log('Connected to server');
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+  });
+
+  // useEffect(() => {
+  //   dispatch(loadSeatsRequest());
+  //   ////////////////////////////////////////////////////////////////////
+  //   const intervalId = setInterval(() => {
+  //     dispatch(loadSeatsRequest());
+  //   }, 120000);
+
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  //   ////////////////////////////////////////////////////////////////////
+  // }, [dispatch]);
   useEffect(() => {
-    dispatch(loadSeatsRequest());
-    ////////////////////////////////////////////////////////////////////
-    const intervalId = setInterval(() => {
+    // dispatch(loadSeats());
+    if (seats.length === 0) {
       dispatch(loadSeatsRequest());
-    }, 120000);
+    }
+
+    const handleSeatsUpdated = (updatedSeats) => {
+      dispatch(loadSeats(updatedSeats));
+    };
+    // Nasłuchuj zdarzenia 'seatsUpdated'
+    // Sprawdź, czy tablica seats jest pusta przed dodaniem nasłuchu na zdarzenie 'seatsUpdated'
+    if (seats.length > 0) {
+      socket.on('seatsUpdated', handleSeatsUpdated);
+    }
+    // socket.on('seatsUpdated', (updatedSeats) => {
+    //   dispatch(loadSeats(updatedSeats));
+    // });
 
     return () => {
-      clearInterval(intervalId);
+      // socket.off('seatsUpdated');
+      socket.off('seatsUpdated', handleSeatsUpdated);
     };
-    ////////////////////////////////////////////////////////////////////
-  }, [dispatch]);
+  }, [dispatch, seats.length]);
 
   const isTaken = (seatId) => {
     return seats.some((item) => item.seat === seatId && item.day === chosenDay);

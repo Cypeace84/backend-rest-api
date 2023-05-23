@@ -35,6 +35,10 @@ router.route('/seats').post((req, res) => {
       const newSeat = { id: uuidv4(), day, seat, client, email };
       res.set('Content-Type', 'application/json');
       seats.push(newSeat);
+      // Emit seatsUpdated event to all clients
+      const io = req.io;
+      io.emit('seatsUpdated', seats);
+
       res.json({ message: 'OK' });
     }
   }

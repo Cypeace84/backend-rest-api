@@ -22,7 +22,10 @@ export const startRequest = (payload) => ({ payload, type: START_REQUEST });
 export const endRequest = (payload) => ({ payload, type: END_REQUEST });
 export const errorRequest = (payload) => ({ payload, type: ERROR_REQUEST });
 
-export const loadSeats = (payload) => ({ payload, type: LOAD_SEATS });
+export const loadSeats = (payload) => {
+  console.log('loadSeats payload:', payload);
+  return { payload, type: LOAD_SEATS };
+};
 export const addSeat = (payload) => ({ payload, type: ADD_SEAT });
 
 /* THUNKS */
@@ -34,6 +37,7 @@ export const loadSeatsRequest = () => {
       let res = await axios.get(`${API_URL}/seats`);
       // await new Promise((resolve) => setTimeout(resolve, 2000));
       dispatch(loadSeats(res.data));
+      console.log('res.data:', res.data);
       dispatch(endRequest({ name: 'LOAD_SEATS' }));
     } catch (e) {
       dispatch(errorRequest({ name: 'LOAD_SEATS', error: e.message }));
@@ -47,7 +51,7 @@ export const addSeatRequest = (seat) => {
     try {
       let res = await axios.post(`${API_URL}/seats`, seat);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      dispatch(addSeat(res));
+      dispatch(addSeat(res.data));
       dispatch(endRequest({ name: 'ADD_SEAT' }));
     } catch (e) {
       dispatch(errorRequest({ name: 'ADD_SEAT', error: e.message }));
@@ -66,8 +70,16 @@ const initialState = {
 
 export default function reducer(statePart = initialState, action = {}) {
   switch (action.type) {
+    // case LOAD_SEATS:
+    //   return { ...statePart, data: [...action.payload] };
     case LOAD_SEATS:
-      return { ...statePart, data: [...action.payload] };
+      if (Array.isArray(action.payload)) {
+        return { ...statePart, data: [...action.payload] };
+      } else {
+        // obsłuż inny przypadek, gdy payload nie jest iterowalny
+        // na przykład możesz zwrócić stan bez zmiany
+        return statePart;
+      }
     case ADD_SEAT:
       return { ...statePart, data: [...statePart.data, action.payload] };
     case START_REQUEST:
