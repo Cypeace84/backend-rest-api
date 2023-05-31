@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const testimonialRoutes = require('./testimonials.routes');
 const concertsRoutes = require('./concerts.routes');
@@ -14,11 +15,11 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-//////
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+//////*/////
+// app.use((req, res, next) => {
+//   req.io = io;
+//   next();
+// });
 //////
 app.use('/api', testimonialRoutes); // add testimonial routes to server
 app.use('/api', concertsRoutes);
@@ -34,6 +35,19 @@ app.get('*', (req, res) => {
 // app.listen(8080, () => {
 //   console.log('Server is running on port: 8080');
 // });
+
+///////*///////
+// connects our backend code with the database
+mongoose.connect('mongodb://localhost:27017/companyDB', {
+  useNewUrlParser: true,
+});
+const db = mongoose.connection;
+
+db.once('open', () => {
+  console.log('Connected to the database');
+});
+db.on('error', (err) => console.log('Error ' + err));
+/////////*/////////
 
 const server = app.listen(process.env.PORT || port, () => {
   console.log(`Server is running on http://localhost:${port}`);
