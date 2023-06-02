@@ -3,18 +3,27 @@ const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 // const db = require('./db');
 // const seats = db.seats;
-const Seat = require('./models/seat.model');
+// const Seat = require('./models/seat.model');
+const SeatMethod = require('./methods/seat.methods');
+
+router.get('/seats', SeatMethod.getAll);
+router.get('/seats/:id', SeatMethod.getById);
+router.post('/seats', SeatMethod.createSeat);
+router.put('/seats/:id', SeatMethod.updateSeat);
+router.delete('/seats/:id', SeatMethod.delete);
+
+module.exports = router;
 
 // router.route('/seats').get((req, res) => {
 //   res.json(seats);
 // });
-router.get('/seats', async (req, res) => {
-  try {
-    res.json(await Seat.find());
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+// router.get('/seats', async (req, res) => {
+//   try {
+//     res.json(await Seat.find());
+//   } catch (err) {
+//     res.status(500).json({ message: err });
+//   }
+// });
 
 ///////////////////////*****//////////////////////////////
 
@@ -28,15 +37,15 @@ router.get('/seats', async (req, res) => {
 //   }
 // });
 
-router.get('/seats/:id', async (req, res) => {
-  try {
-    const s = await Seat.findById(req.params.id);
-    if (!s) res.status(404).json({ message: 'Not found' });
-    else res.json(s);
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+// router.get('/seats/:id', async (req, res) => {
+//   try {
+//     const s = await Seat.findById(req.params.id);
+//     if (!s) res.status(404).json({ message: 'Not found' });
+//     else res.json(s);
+//   } catch (err) {
+//     res.status(500).json({ message: err });
+//   }
+// });
 
 ///////////////////////*****//////////////////////////////
 
@@ -66,34 +75,34 @@ router.get('/seats/:id', async (req, res) => {
 //   }
 // });
 
-router.post('/seats', async (req, res) => {
-  try {
-    const { day, seat, client, email } = req.body;
-    console.log('seat:', req.body);
-    console.log('Client:', req.body.client);
-    if (!client || !seat || !day || !email) {
-      res
-        .status(400)
-        .json({ message: 'client, seat, email and day are required' });
-    } else {
-      const isSeatTaken = await Seat.exists({ day: day, seat: seat });
-      if (isSeatTaken) {
-        res.status(400).json({ message: 'The slot is already taken...' });
-      } else {
-        const newSeat = new Seat({ id: uuidv4(), day, seat, client, email });
-        await newSeat.save();
-        // Emit seatsUpdated event to all clients
-        const updatedSeats = await Seat.find();
-        const io = req.io;
-        io.emit('seatsUpdated', updatedSeats);
+// router.post('/seats', async (req, res) => {
+//   try {
+//     const { day, seat, client, email } = req.body;
+//     console.log('seat:', req.body);
+//     console.log('Client:', req.body.client);
+//     if (!client || !seat || !day || !email) {
+//       res
+//         .status(400)
+//         .json({ message: 'client, seat, email and day are required' });
+//     } else {
+//       const isSeatTaken = await Seat.exists({ day: day, seat: seat });
+//       if (isSeatTaken) {
+//         res.status(400).json({ message: 'The slot is already taken...' });
+//       } else {
+//         const newSeat = new Seat({ id: uuidv4(), day, seat, client, email });
+//         await newSeat.save();
+//         // Emit seatsUpdated event to all clients
+//         const updatedSeats = await Seat.find();
+//         const io = req.io;
+//         io.emit('seatsUpdated', updatedSeats);
 
-        res.json({ message: 'OK' });
-      }
-    }
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+//         res.json({ message: 'OK' });
+//       }
+//     }
+//   } catch (err) {
+//     res.status(500).json({ message: err });
+//   }
+// });
 
 ///////////////////////*****//////////////////////////////
 
@@ -118,33 +127,33 @@ router.post('/seats', async (req, res) => {
 //   }
 // });
 
-router.put('/seats/:id', async (req, res) => {
-  try {
-    const s = await Seat.findById(req.params.id);
-    if (!s) {
-      res.status(404).json({ message: 'Seat not found' });
-    } else {
-      const { day, seat, client, email } = req.body;
-      console.log(day, seat, client, email);
-      if (!day && !seat && !client && !email) {
-        res
-          .status(404)
-          .json({ message: 'day, seat, client or email are required' });
-      } else {
-        if (client) s.client = client;
-        if (seat) s.seat = seat;
-        if (day) s.day = day;
-        if (email) s.email = email;
+// router.put('/seats/:id', async (req, res) => {
+//   try {
+//     const s = await Seat.findById(req.params.id);
+//     if (!s) {
+//       res.status(404).json({ message: 'Seat not found' });
+//     } else {
+//       const { day, seat, client, email } = req.body;
+//       console.log(day, seat, client, email);
+//       if (!day && !seat && !client && !email) {
+//         res
+//           .status(404)
+//           .json({ message: 'day, seat, client or email are required' });
+//       } else {
+//         if (client) s.client = client;
+//         if (seat) s.seat = seat;
+//         if (day) s.day = day;
+//         if (email) s.email = email;
 
-        await s.save();
+//         await s.save();
 
-        res.json({ message: 'OK' });
-      }
-    }
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+//         res.json({ message: 'OK' });
+//       }
+//     }
+//   } catch (err) {
+//     res.status(500).json({ message: err });
+//   }
+// });
 
 ///////////////////////*****//////////////////////////////
 
@@ -158,17 +167,17 @@ router.put('/seats/:id', async (req, res) => {
 //   }
 // });
 
-router.delete('/seats/:id', async (req, res) => {
-  try {
-    const s = await Seat.findByIdAndDelete(req.params.id);
-    if (s) {
-      res.json(s);
-    } else {
-      res.status(404).json({ message: 'Not found...' });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+// router.delete('/seats/:id', async (req, res) => {
+//   try {
+//     const s = await Seat.findByIdAndDelete(req.params.id);
+//     if (s) {
+//       res.json(s);
+//     } else {
+//       res.status(404).json({ message: 'Not found...' });
+//     }
+//   } catch (err) {
+//     res.status(500).json({ message: err });
+//   }
+// });
 
-module.exports = router;
+// module.exports = router;
