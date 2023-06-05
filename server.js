@@ -38,9 +38,15 @@ app.get('*', (req, res) => {
 
 ///////*///////
 // connects our backend code with the database
-mongoose.connect('mongodb://localhost:27017/NewWaveDB', {
-  useNewUrlParser: true,
-});
+// mongoose.connect('mongodb://localhost:27017/NewWaveDB', {
+//   useNewUrlParser: true,
+// });
+mongoose.connect(
+  'mongodb+srv://cyprianadamski:1Kodilla@cluster0.tfesxu0.mongodb.net/?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+  }
+);
 const db = mongoose.connection;
 
 db.once('open', () => {
