@@ -10,9 +10,9 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const s = await Seat.findById(req.params.id);
-    if (!s) res.status(404).json({ message: 'Not found' });
-    else res.json(s);
+    const seat = await Seat.findById(req.params.id);
+    if (!seat) res.status(404).json({ message: 'Not found' });
+    else res.json(seat);
   } catch (err) {
     res.status(500).json({ message: err });
   }
@@ -49,8 +49,8 @@ exports.createSeat = async (req, res) => {
 
 exports.updateSeat = async (req, res) => {
   try {
-    const s = await Seat.findById(req.params.id);
-    if (!s) {
+    const updatedSeat = await Seat.findById(req.params.id);
+    if (!updatedSeat) {
       res.status(404).json({ message: 'Seat not found' });
     } else {
       const { day, seat, client, email } = req.body;
@@ -60,10 +60,10 @@ exports.updateSeat = async (req, res) => {
           .status(404)
           .json({ message: 'day, seat, client or email are required' });
       } else {
-        if (client) s.client = client;
-        if (seat) s.seat = seat;
-        if (day) s.day = day;
-        if (email) s.email = email;
+        if (client) updatedSeat.client = client;
+        if (seat) updatedSeat.seat = seat;
+        if (day) updatedSeat.day = day;
+        if (email) updatedSeat.email = email;
 
         await s.save();
 
@@ -77,9 +77,9 @@ exports.updateSeat = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const s = await Seat.findByIdAndDelete(req.params.id);
-    if (s) {
-      res.json(s);
+    const deletedSeat = await Seat.findByIdAndDelete(req.params.id);
+    if (deletedSeat) {
+      res.json(deletedSeat);
     } else {
       res.status(404).json({ message: 'Not found...' });
     }

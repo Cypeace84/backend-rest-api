@@ -11,10 +11,10 @@ exports.getAll = async (req, res) => {
 exports.getRandom = async (req, res) => {
   try {
     const count = await Testimonial.countDocuments();
-    const rand = Math.floor(Math.random() * count);
-    const testim = await Testimonial.findOne().skip(rand);
-    if (!testim) res.status(404).json({ message: 'Not found' });
-    else res.json(testim);
+    const random = Math.floor(Math.random() * count);
+    const randomTestimonial = await Testimonial.findOne().skip(random);
+    if (!randomTestimonial) res.status(404).json({ message: 'Not found' });
+    else res.json(randomTestimonial);
   } catch (err) {
     res.status(500).json({ message: err });
   }
@@ -22,9 +22,9 @@ exports.getRandom = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const testim = await Testimonial.findById(req.params.id);
-    if (!testim) res.status(404).json({ message: 'Not found' });
-    else res.json(testim);
+    const testimonial = await Testimonial.findById(req.params.id);
+    if (!testimonial) res.status(404).json({ message: 'Not found' });
+    else res.json(testimonial);
   } catch (err) {
     res.status(500).json({ message: err });
   }
@@ -45,13 +45,13 @@ exports.updateTestimonial = async (req, res) => {
   const { author, text } = req.body;
 
   try {
-    const testim = await Testimonial.findByIdAndUpdate(
+    const updatedestimonial = await Testimonial.findByIdAndUpdate(
       req.params.id,
       { author: author, text: text },
       { new: true }
     );
-    if (testim) {
-      res.json(testim);
+    if (updatedestimonial) {
+      res.json(updatedestimonial);
     } else {
       res.status(404).json({ message: 'Not found...' });
     }
@@ -62,9 +62,11 @@ exports.updateTestimonial = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const testim = await Testimonial.findByIdAndDelete(req.params.id);
-    if (testim) {
-      res.json(testim);
+    const deletedTestimonial = await Testimonial.findByIdAndDelete(
+      req.params.id
+    );
+    if (deletedTestimonial) {
+      res.json(deletedTestimonial);
     } else {
       res.status(404).json({ message: 'Not found...' });
     }

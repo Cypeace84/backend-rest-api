@@ -10,9 +10,9 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const c = await Concert.findById(req.params.id);
-    if (!c) res.status(404).json({ message: 'Not found' });
-    else res.json(c);
+    const concert = await Concert.findById(req.params.id);
+    if (!concert) res.status(404).json({ message: 'Not found' });
+    else res.json(concert);
   } catch (err) {
     res.status(500).json({ message: err });
   }
@@ -72,8 +72,8 @@ exports.updateConcert = async (req, res) => {
 };
 exports.delete = async (req, res) => {
   try {
-    const c = await Concert.findByIdAndDelete(req.params.id);
-    if (c) {
+    const deletedConcert = await Concert.findByIdAndDelete(req.params.id);
+    if (deletedConcert) {
       res.json(c);
     } else {
       res.status(404).json({ message: 'Not found...' });
